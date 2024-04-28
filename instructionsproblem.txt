@@ -1,6 +1,8 @@
     
 Here is a shprt summary of what this project is about
 
+We got an assignemtn to create our own programming language in ruby, we were given a given parser from our teacher to work around, we chose to work with this parser (rdparse.rb) to create our language, here is a short breif about all the files. 
+
 
 
     rdparse.rb: This file is a given parser that we got from our teachers, this is remaining unchanged and we do not need to change or actually understand it that well, we will use this to parse our language.
