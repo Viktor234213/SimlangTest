@@ -1,3 +1,5 @@
+
+
 require 'logger'
 require_relative 'classes'
 
@@ -120,9 +122,9 @@ class Parser
     @max_pos = 0
     @expected = []
     result = @start.parse
-      # if @pos != @tokens.size ###################
-        # raise ParseError, "Parse error. expected: '#{@expected.join(', ')}', found '#{@tokens[@max_pos]}'"
-      # end
+      #  if @pos != @tokens.size ###################
+        #  raise ParseError, "Undefined variable for variable: '#{@tokens[@max_pos]}'"
+      #  end
     return result
   end
   
@@ -176,100 +178,181 @@ end
 
 
 class SimLang
-  
-    def initialize
-      @langParser = Parser.new("SimLang") do
-        token(/set/) { |key_word| key_word }
-        token(/show:/) { |key_word| key_word }
-        token(/to/) { |key_word| key_word }
-        token(/write:/) { |key_word| key_word }
-        token(/[a-zA-Z][a-zA-Z0-9_]*/) { |variable_name| variable_name }
-        token(/\s+/)
-        token(/\d+\.\d+/) { |digit_sequence| digit_sequence.to_f }
-        token(/\d+/) { |digit_sequence| digit_sequence.to_i }
-        token(/true/) {true}
-        token(/false/) {false}
-        token(/"(.)"/) { |letter| letter }
-        token(/./) { |letter| letter }
+  def initialize
+    @langParser = Parser.new("SimLang") do
+      token(/\/\/.*$/) { puts "-------------test comment-------------"} # a single line comment should start with //
+      token(/(<|>|<=|>=|!=|==)/) { |com_op| com_op }
+      token(/(and|or|not)/) { |log_op| log_op }
+      token(/(\+|\-|\*|\/)/) { |op| op }
+      token(/(\(|\)|\{|\})/) { |parens| parens }
+      token(/set/) { |key_word| key_word }
+      token(/show:/) { |key_word| key_word }
+      token(/to/) { |key_word| key_word }
+      token(/write:/) { |key_word| key_word }
+      token(/if/) { |key_word| key_word }
+      token(/then/) { |key_word| key_word }
+      token(/else/) { |key_word| key_word }
+      token(/while/) { |key_word| key_word }
+      token(/[a-zA-Z][a-zA-Z0-9_]*/) { |variable_name| variable_name }
+      token(/\s+/)
+      token(/\d+\.\d+/) { |digit_sequence| digit_sequence.to_f }
+      token(/\d+/) { |digit_sequence| digit_sequence.to_i }
+      token(/(true|TRUE)/) { true }
+      token(/(false|FALSE)/) { false }
+      token(/"(.)"/) { |letter| letter } # token(/"(.*)"/) { |letter| letter }
+      token(/./) { |letter| letter }
 
+      start :statements do
+        match(:output)
+        match(:assignment)
+        match(:condition)
+        match(:input)
+        match(:if_statement)
+        match(:while_loop)
+      end
 
-        start :statements do
-          match(:expr)
-          match(:output)
-        end
+      rule :output do
+        match('show:', :logical_expression) { |_, expr| Output.new(expr).eval }
+        match('show:', :expr) { |_, expr| Output.new(expr).eval }
+      end
 
-        rule :output do
-          match('show:', :expr) { |_, expr| Output.new(expr).eval }
-        end
+      rule :input do
+        match('write:', '#', :variable) { |_, _, variable| Scope.handle_input(variable) }
+      end
 
-        rule :expr do
-          match(:addsub)
-          match('(', :expr, ')') { |_, expr, _| expr }
-          match("true") { |t| MyBoolean.new(t).eval } 
-          match("false") { |f| MyBoolean.new(f).eval } 
-        end
+      rule :assignment do
+        match('set', '#', :variable, 'to', :expr) { |_, _, key, _, value| Scope.add_variable(key, value) }
+      end
 
-        rule :addsub do
-          match(:multidiv)
-          match(:addsub, '+',:multidiv ) { |lhs, _, rhs| Addition.new(lhs, rhs).eval }
-          match(:addsub, '-', :multidiv) { |lhs, _, rhs| Subtraction.new(lhs, rhs).eval }
-        end
+      rule :if_statement do
+        match('if', '(', :condition, ')', :then) { |_, _, condition, _, block| IfStatement.new(condition, block).eval }
+      end
 
-        rule :multidiv do
-          match(:unaryexpr)
-          match(:multidiv, '*', :unaryexpr) { |lhs, _, rhs| Multiplication.new(lhs, rhs).eval }
-          match(:multidiv, '/', :unaryexpr) { |lhs, _, rhs| Division.new(lhs, rhs).eval }
-        end
+      rule :then do
+        # match('then', '{', :block, '}', 'else', :else_block) do |_, _, block, _, _, else_block|
+          # Block.new(block).eval
+          # Block.new(else_block).eval
+        # end
+        match('then', '{', :block, '}') {|_, _, block, _| Block.new(block).eval }
+      end
+      
+      rule :while_loop do
+        match('while', '(', :condition, ')', :loop) {|_, _, condition, _, loop| WhileLoop.new(condition, block).eval }
+      end
 
-        rule :unaryexpr do
-          match(:factor)
-          match('-', :unaryexpr) { |_, expr| -expr }
-        end
+      rule :loop do
+        match('then', '{', :block, '}') {|_, _, block, _| Block.new(block).eval }
+      end
 
-        rule :factor do
-          match(:num)
-          match('(', :expr, ')') { |_, expr, _| expr }
-        end
+      rule :block do
+        #match(:inner_statement, :block) { |inner_statement, block| inner_statement + block }
+        match(:inner_statement) { |inner_statement| inner_statement }
+      end
 
-          rule :num do
-            match(:digit, :num) { |digit, num| digit + num }
-            match(:digit) { |digit| digit }
-          end
+      rule :else_block do
+        match('{', :block, '}') { |_, else_block, _| Block.new(else_block).eval }
+      end
 
-         rule :digit do
-           match(Float) {|float| MyFloat.new(float).eval }
-           match(Integer) {|int| MyInteger.new(int).eval }
-           
-         end
-        end
-      end 
-    
+      rule :inner_statement do
+        match(:output)
+        match(:assignment)
+        match(:input)
+      end
 
-    def done(str)
-     ["quit","exit","bye","done",""].include?(str.chomp)
-    end
-  
-    def roll
-      print "[SimLang] \n"
-      str = gets
-      if done(str) then
-        puts "Thanks for using SimLang!"
-      else
-        result = @langParser.parse str
-        puts "=> #{result}"
-        roll
+      rule :condition do
+        match(:logical_expression) { |condition| Condition.new(condition).eval }
+      end
+
+      rule :logical_expression do
+        match(:logical_term)
+        match(:logical_expression, 'or', :logical_term) { |expr1, _, expr2| LogicalExpression.new(expr1, :or, expr2).eval }
+      end
+
+      rule :logical_term do
+        match(:logical_factor)
+        match(:logical_term, 'and', :logical_factor) { |term, _, factor| LogicalExpression.new(term, :and, factor).eval }
+      end
+
+      rule :logical_factor do
+        match('not', :logical_factor) { |_, factor| LogicalExpression.new(:not, factor).eval }
+        match('(', :logical_expression, ')') { |_, expr, _| expr }
+        match(:comparison)
+      end
+
+      rule :comparison do
+        match(:expr, :comparison_operator, :expr) { |val1, op, val2| Expression.new(val1, op, val2).eval }
+      end
+
+      rule :comparison_operator do
+        match('<')
+        match('>')
+        match('<=')
+        match('>=')
+        match('==')
+        match('!=')
+      end
+
+      rule :variable do
+        match(/[a-zA-Z][a-zA-Z0-9_]*/)
+      end
+
+      rule :expr do
+        match(:addsub)
+        match('(', :expr, ')') { |_, expr, _| expr }
+        match(/(true|TRUE)/) { |t| MyBoolean.new(t).eval }
+        match(/(false|FALSE)/) { |f| MyBoolean.new(f).eval }
+        match('#', :variable) { |_, var| MyVariable.new(var).eval }
+        match(/"(.)"/) { |letter| MyCharacter.new(letter).eval }
+      end
+
+      rule :addsub do
+        match(:multidiv)
+        match(:addsub, '+', :multidiv) { |lhs, op, rhs| Expression.new(lhs, op, rhs).eval }
+        match(:addsub, '-', :multidiv) { |lhs, op, rhs| Expression.new(lhs, op, rhs).eval }
+      end
+
+      rule :multidiv do
+        match(:unaryexpr)
+        match(:multidiv, '*', :unaryexpr) { |lhs, op, rhs| Expression.new(lhs, op, rhs).eval }
+        match(:multidiv, '/', :unaryexpr) { |lhs, op, rhs| Expression.new(lhs, op, rhs).eval }
+      end
+
+      rule :unaryexpr do
+        match(:factor)
+        match('-', :unaryexpr) { |_, expr| -expr }
+      end
+
+      rule :factor do
+        match(:num)
+        match('(', :expr, ')') { |_, expr, _| expr }
+      end
+
+      rule :num do
+        match(:digit, :num) { |digit, num| digit + num }
+        match(:digit) { |digit| digit }
+      end
+
+      rule :digit do
+        match(Float) { |float| MyFloat.new(float).eval }
+        match(Integer) { |int| MyInteger.new(int).eval }
+        match('#', :variable) { |_, var| MyVariable.new(var).eval }
       end
     end
-    
- 
-    def log(state = true)
-      if state
-        @langParser.logger.level = Logger::DEBUG
-      else
-        @langParser.logger.level = Logger::WARN
-      end
+  end
+
+  def parse(code)
+    result = nil
+    code.each_line do |line|
+      result = @langParser.parse(line)
     end
+    "#{result}"
+  end
+
+  def log(state = true)
+    if state
+      @langParser.logger.level = Logger::DEBUG
+    else
+      @langParser.logger.level = Logger::WARN
+    end
+  end
 end
-  
-roller = SimLang.new
-roller.roll
