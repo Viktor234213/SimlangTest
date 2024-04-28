@@ -1,0 +1,14 @@
+show: 3+3
+set #x to 5
+show: #x
+set #l to 3
+show: #x + #l
+set #t to true
+show: #t
+set #f to false
+show: #f
+show: 3 + 2 * 3
+show: -1 * (3+2)
+show: #x > #l
+set #noo to "l"
+show: #noo
