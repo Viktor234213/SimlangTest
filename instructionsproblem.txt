@@ -13,5 +13,25 @@ Here is a shprt summary of what this project is about
 
     tolk.rb This file serves as the entry point for interpreting SimLang code. It initializes the SimLang interpreter and provides methods for reading and interpreting SimLang code from a file.
 
+    test.sim: this is just a file that tests our language if we get the correct output, test it and see what is the outcome to understand our language.
+
+
+
+
+
+
+    What is the problem?
+
+    the problem is if-statements and while loops, we cant manage to get this working, for example this should work: 
+
+                if (3==5) then {show: 1 } else {show: 2}
+
+    (we keep the fully statement on the same line right now scince we havent worked on fixing so that it will run more lines at the same time.
+
+    we tried to implement rules and classes to pass this, but something is wrong, we started to debug but were stuck, we dont know where to continue and would love to get some advice or help, thank you for your time!
+
+
+    if there is any questions feel free to contact me on discord: (viktor_s11), thank you!
+
 
     
