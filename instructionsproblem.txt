@@ -1,8 +1,17 @@
-The problem is that we have created a language "simlang" where we got a already done parser for it, the parser goes until row 173, then we have our class simlang that works as it takes tokens and then we have different rules for our program, we just fixed the artimetic part meaning that we could operate +,-,/,* in our program.
+    
+Here is a shprt summary of what this project is about
 
-We now want an assign rule that could look like this "set #x to 2" where # indicates a variable and 2 is the value of that variable, we want to store the variables in a hash whihc should somehow be our scope, were not sure how to start with this, the rules part should save all values and send them as object to the class file which will do stuff with it.
 
-Im not sure how to keep going, so what we wanna do is to for example "set #x to 2" and also "show: #x" to get out the value of #x which in this case is = 2. We need to handle this somehow with a hash where all the variables are stored, and in the rules save out the key and value to pass it to the class that handles the variables, but we dont know how, we need to handle everything in the classes file and the rules should only define rules and save the correct objects.
 
-Im not sure what scope and variable handling is the easiest but we would prefer an easy soloution, thanks for everyone trying to figure this out and help!
+    rdparse.rb: This file is a given parser that we got from our teachers, this is remaining unchanged and we do not need to change or actually understand it that well, we will use this to parse our language.
 
+    simlang.rb: in this file we have the current parser on top (rdparse.rb) that we use, (it remains unchanged), then under that we do tokens that match different keywords and then we do certain things with it when it matches, we creeate objects here and then pass it to the classes file, its important that we only create and hanles things as objects here and do not do anyhing directly in this file, only pass it to classes file.
+
+    classes.rb Here we define classes that takes the objects saved dowwn by our rules in simlang.rb, here we do stuff like artimethic stuff, comparisions etc.
+
+    
+
+    tolk.rb This file serves as the entry point for interpreting SimLang code. It initializes the SimLang interpreter and provides methods for reading and interpreting SimLang code from a file.
+
+
+    
