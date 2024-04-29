@@ -68,6 +68,7 @@ class IfStatement
     elsif !@block2.nil? #if the expr is not true and there is a block2 (else), do the else block then
       @block2.eval
     end
+  end
 end
 
 class Expression
@@ -173,5 +174,4 @@ class MyCharacter
       return @value[1]
     end
   end
-end
 end
