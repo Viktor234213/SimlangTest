@@ -258,12 +258,12 @@ class SimLang
 
       
       rule :comparison do
-        match(:addsub, '>', :compare)  { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
-        match(:addsub, '<', :compare)  { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
-        match(:addsub, '<=', :compare) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
-        match(:addsub, '>=', :compare) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
-        match(:addsub, '==', :compare) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
-        match(:addsub, '!=', :compare) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
+        match(:addsub, '>', :comparison)  { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
+        match(:addsub, '<', :comparison)  { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
+        match(:addsub, '<=', :comparison) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
+        match(:addsub, '>=', :comparison) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
+        match(:addsub, '==', :comparison) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
+        match(:addsub, '!=', :comparison) { |lhs, operator, rhs| Expression.new(lhs, operator, rhs) }
         match(:addsub)
       end
 
