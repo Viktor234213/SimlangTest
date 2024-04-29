@@ -203,7 +203,6 @@ class SimLang
       token(/./) { |letter| letter }
 
       start :statements do
-        match(:expr)
         match(:assignment)
         match(:output)
         match(:input)
