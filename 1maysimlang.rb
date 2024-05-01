@@ -1,5 +1,7 @@
 require 'logger'
+require 'pry'
 require_relative 'classes'
+
 
 
 class Rule
@@ -196,6 +198,7 @@ class SimLang
       token(/then/) { |key_word| key_word }
       token(/else/) { |key_word| key_word }
       token(/while/) { |key_word| key_word }
+      token(/function/) { |key_word| key_word }
       token(/[a-zA-Z][a-zA-Z0-9_]*/) { |variable_name| variable_name }
       token(/\s+/)
       token(/\d+\.\d+/) { |digit_sequence| digit_sequence.to_f }
