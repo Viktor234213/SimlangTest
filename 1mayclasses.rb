@@ -215,27 +215,21 @@ class LogicalExpression
 end
 
 class FunctionCall
-    attr_accessor :name, :arguments
+  attr_accessor :name, :arguments
   
-    def initialize(name, arguments)
-      @name = name
-      @arguments = arguments
-    end
+  def initialize(name, arguments)
+    @name = name
+    @arguments = arguments
+  end
   
-    def eval
-      
+  def eval
+    function = Scope.find_variable(@name)
+    if function.nil? || !function.is_a?(MyFunction)
+      abort("Function '#{@name}' not found or not a valid function")
     end
-
-    def call_function(function, arguments_to_pass)
-
-    if function.parameters.length != arguments_to_pass.length
-      abort("Argument mismatch for #{function.name}; expected #{function.parameters.length} args but got #{arguments_to_pass.length}")
-    end
-  
     
-    return_value = function.execute(arguments_to_pass)
-  
-    return return_value
+    arguments_to_pass = @arguments.map(&:eval)
+    function.call_function(arguments_to_pass)
   end
 end
 
@@ -256,7 +250,6 @@ class FunctionDeclaration
 end
 
 
-
 class MyFunction
   attr_reader :name, :parameters, :block
 
@@ -266,9 +259,8 @@ class MyFunction
     @block = block
   end
 
-  def execute(arguments)
-
-    Scope.enter_scope
+  def call_function(arguments)
+    Scope.enter_scope 
 
     @parameters.each_with_index do |param, index|
       Scope.set_local(param, arguments[index])
@@ -280,7 +272,6 @@ class MyFunction
     return return_value
   end
 end
-
 
 
 
