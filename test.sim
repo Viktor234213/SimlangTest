@@ -1,0 +1,139 @@
+//----------------------------------------------------------------------
+
+// TESTING ARITHMETIC
+
+set #x to 10   
+set #y to 5    
+show: #x + #y  // should be 15
+show: #x - #y  // should be 5
+show: #x * #y  // should be 50
+show: #x / #y  // should be 2
+
+//----------------------------------------------------------------------
+
+// TESTING ASSIGNMENT
+
+set #result to #x + #y 
+show: #result  // should be 15
+
+//-----------------------------------------------------------------------
+
+// TESTING INPUT
+
+write: #name   
+show: #name    // should be whatever you put #name to be
+
+//------------------------------------------------------------------------
+
+// TESTING IF-STATEMENT
+
+set #age to 20  
+if (#age > 18) then
+    {show: true}   // should be true if age is > 18
+else
+    {show: false}  // should be false if age is < 18
+
+//------------------------------------------------------------------------
+
+// TESTING WHILE LOOP
+
+set #counter to 0
+while (#counter < 5) loop
+    {show: #counter
+    set #counter to #counter + 1}  // should generate 0, 1, 2, 3, 4
+
+//------------------------------------------------------------------------
+
+// TESTING AND/OR (INSIDE IF STATEMENTS)
+
+set #x to 1
+set #y to 2
+set #a to 3
+set #b to 4
+
+// TEST 1
+
+if (#x > #y or #x == 1) then  // should be true! 
+    {show: true}
+  else
+    {show: false}
+
+// TEST 2
+
+if (#x < #y and #a < #b) then  // should be true! 
+    {show: true}
+  else
+    {show: false}
+
+//-------------------------------------------------------------------------
+
+// TRYING WITH A MORE COMPLEX IF STATEMENT WITH AND/OR 
+
+if (((#x > #y) and (#a < #b)) or ((#x == 2) and (#b == 4)))  then   
+    {show: true} 
+  else
+    {show: false} // should be false!
+
+//---------------------------------------------------------------------------
+
+// TESTING A SIMPLE FUNCTION
+
+function hello1(a) {
+    set #a to 2
+    show: #a
+
+}
+
+hello1(3) // this should change the value "3" to "2"
+
+//-----------------------------------------------------------------------------
+
+// TESTING A FUNCTION WITH WHILE-LOOP
+
+function tdp019(a,b) {
+    set #counter to 0
+    while (#a > #b and #counter < 10) loop {  // Limiting to 100 iterations
+        show: #counter
+        set #a to #b + 1
+        set #counter to #counter + 1
+    }
+}
+
+tdp019(5,2)  // should generate 0,1,2,3,4,5,6,7,8,9
+
+//------------------------------------------------------------------------------
+
+// TESTING A SIMPLE FUNCTION WITH IF-STATEMENT
+
+function add(a, b) {
+    if (#a > #b) then 
+    {show:1} 
+}
+
+add(5, 3) // this should result in "1"
+
+//-------------------------------------------------------------------------------
+
+// TESTING A FUNCTION WITH A MORE COMPLEX IF STATEMENT
+
+function add(x,y,a,b){
+if (((#x > #y) and (#a < #b)) or ((#x == 2) and (#b == 4)))  then   
+    {show: true} 
+  else
+    {show: false} 
+}
+
+add(2,2,3,6) // this should be false
+
+//--------------------------------------------------------------------------------
+
+// TESTING TO REACH A VARIABLE OUTSIDE A FUNCTION
+
+function error(variable){
+    show: #variable 
+}
+
+error("h") // by running this you should get the output "h"
+show: #variable // this should generate error since the #variable is INSIDE the function and not reachable outside!
+
+//---------------------------------------------------------------------------------
