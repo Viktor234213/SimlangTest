@@ -12,19 +12,11 @@ class SimLangInterpreter
   
   def interpret(code)
     @roller.log(false)
-    @roller.parse(code)
+    simlang = @roller.parse(code)
+    simlang.eval
   rescue Parser::ParseError => e
     puts "Parse Error: #{e.message}"
   end
-
-  # def readinput
-  #   loop do
-  #     print "> "
-  #     input = gets
-  #     interpret(input)
-  #   end
-  # end
-  
 end
 
 if __FILE__ == $PROGRAM_NAME
@@ -41,7 +33,5 @@ if __FILE__ == $PROGRAM_NAME
   
   interpreter = SimLangInterpreter.new
   interpreter.readcode(filename)
-  # if $code.include?("write:")
-    # interpreter.readinput
-  # end
 end
+
